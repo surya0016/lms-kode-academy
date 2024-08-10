@@ -1,9 +1,8 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
+import { Combobox } from '@/components/ui/combobox'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Course } from '@prisma/client'
@@ -15,27 +14,26 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import * as z from 'zod'
 
-interface DescriptionFormProps {
+interface CategoryFormProps {
   initialData:Course
   courseId: string
+  options: {label: string; value:string}[]
 }
 
 const formSchema = z.object({
-  description:z.string().min(1, {
-    message:"Description is required"
-  })
+  categoryId:z.string().min(1)
 })
 
-const DescriptionForm = ({
-  initialData, courseId
-}:DescriptionFormProps) => {
+const CategoryForm = ({
+  initialData, courseId, options
+}:CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver:zodResolver(formSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      categoryId: initialData?.categoryId || "",
     } 
   })
 
@@ -44,7 +42,7 @@ const DescriptionForm = ({
   const onSubmit = async(values:z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/courses/${courseId}`, values)
-      toast.success("Description updated")
+      toast.success("Category updated")
       setIsEditing(!isEditing)
       router.refresh()
     } catch (error) {
@@ -52,11 +50,13 @@ const DescriptionForm = ({
     }
     console.log(values)
   }
-  
+
+  const selectedOption = options.find((option) => option.value === initialData.categoryId);
+
   return (
     <div className="mt-6 border dark:text-white dark:bg-slate-900 bg-slate-100 rounded-md p-4">
       <div className="font-semibold flex items-center justify-between">
-        Course Description
+        Course Category
         <Button variant="ghost" onClick={()=>setIsEditing(!isEditing)}>
           {isEditing ? (
             <>
@@ -65,7 +65,7 @@ const DescriptionForm = ({
           ):(
             <>
               <Pencil className="w-4 h-4 mr-2"/>
-              Edit Description
+              Edit Category
             </>
           )}
         </Button>
@@ -73,9 +73,9 @@ const DescriptionForm = ({
       {!isEditing && (
         <p className={cn(
           "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
+          !initialData.categoryId && "text-slate-500 italic"
         )}>
-          {initialData.description || "No Description" }
+          {selectedOption?.label || "No Category" }
         </p>
       )}{isEditing && (
       <Form {...form}>
@@ -85,14 +85,12 @@ const DescriptionForm = ({
         >
           <FormField
             control={form.control}
-            name="description"
+            name="categoryId"
             render={({field})=>(
               <FormItem>
                 <FormControl>
-                  <Textarea
-                    disabled={isSubmitting}
-                    placeholder="e.g. 'This course is about...'"
-                    className='bg-white'
+                  <Combobox
+                    options={options}
                     {...field}
                   />
                 </FormControl>
@@ -112,4 +110,4 @@ const DescriptionForm = ({
   )
 }
 
-export default DescriptionForm
+export default CategoryForm

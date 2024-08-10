@@ -2,17 +2,16 @@
 
 import FileUpload from '@/components/file-upload'
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+import { db } from '@/lib/db'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Course } from '@prisma/client'
+import axios from 'axios'
 import { ImageIcon, Pencil, PlusCircle } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import * as z from 'zod'
 
 interface ImageFormProps {
@@ -42,6 +41,14 @@ const ImageForm = ({
   const { isSubmitting, isValid } = form.formState
 
   const onSubmit = async(values:z.infer<typeof formSchema>) => {
+    try {
+      await axios.patch(`/api/courses/${courseId}`, values)
+      toast.success("Image updated")
+      setIsEditing(!isEditing)
+      router.refresh()
+    } catch (error) {
+      toast.error("Something went wrong")
+    }
     console.log(values)
   }
   
@@ -91,6 +98,7 @@ const ImageForm = ({
           onChange={(url)=>{
             if(url){
               onSubmit({imageUrl: url})
+              console.log(initialData.imageUrl)
             }
           }}
         />

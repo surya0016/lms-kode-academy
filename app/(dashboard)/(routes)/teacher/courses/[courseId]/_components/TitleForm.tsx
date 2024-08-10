@@ -47,7 +47,7 @@ const TitleForm = ({
   const onSubmit = async(values:z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/courses/${courseId}`, values)
-      toast.success("Course updated")
+      toast.success("Title updated")
       setIsEditing(!isEditing)
       router.refresh()
     } catch (error) {

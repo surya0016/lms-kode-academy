@@ -6,6 +6,9 @@ import { redirect } from "next/navigation";
 import TitleForm from "./_components/TitleForm";
 import DescriptionForm from "./_components/DescriptionForm";
 import ImageForm from "./_components/ImageForm";
+import { Combobox } from "@/components/ui/combobox";
+import CategoryForm from "./_components/CategoryForm";
+import { getEnabledCategories } from "trace_events";
 
 const CourseIdPage = async ({
   params
@@ -22,6 +25,12 @@ const CourseIdPage = async ({
     where:{
       id: params.courseId
     }
+  })
+
+  const categories = await db.category.findMany({
+    orderBy:{
+      name:"asc",
+    },
   })
 
   if(!course) return redirect("/");
@@ -70,6 +79,14 @@ const CourseIdPage = async ({
             <ImageForm
               initialData={course}
               courseId={course.id}
+            />
+            <CategoryForm
+              initialData={course}
+              courseId={course.id}
+              options={categories.map((category) => ({
+                label: category.name,
+                value: category.id,
+              }))}
             />
         </div>
       </div>
