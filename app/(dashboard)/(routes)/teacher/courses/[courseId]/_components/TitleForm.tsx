@@ -92,7 +92,6 @@ const TitleForm = ({
                     <Input 
                       disabled={isSubmitting}
                       placeholder="e.g. 'Advanced web development"
-                      className="bg-white"
                       {...field}
                     />
                   </FormControl>

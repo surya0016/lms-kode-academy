@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { formatPrice } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Course } from '@prisma/client'
@@ -15,27 +16,25 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import * as z from 'zod'
 
-interface DescriptionFormProps {
+interface PriceFormProps {
   initialData:Course
   courseId: string
 }
 
 const formSchema = z.object({
-  description:z.string().min(1, {
-    message:"Description is required"
-  })
+  price:z.coerce.number(),
 })
 
-const DescriptionForm = ({
+const PriceForm = ({
   initialData, courseId
-}:DescriptionFormProps) => {
+}:PriceFormProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver:zodResolver(formSchema),
     defaultValues: {
-      description: initialData?.description || "",
+      price: initialData?.price || undefined,
     } 
   })
 
@@ -44,7 +43,7 @@ const DescriptionForm = ({
   const onSubmit = async(values:z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/courses/${courseId}`, values)
-      toast.success("Description updated")
+      toast.success("Price updated")
       setIsEditing(!isEditing)
       router.refresh()
     } catch (error) {
@@ -56,7 +55,7 @@ const DescriptionForm = ({
   return (
     <div className="mt-6 border dark:text-white dark:bg-slate-900 bg-slate-100 rounded-md p-4">
       <div className="font-semibold flex items-center justify-between">
-        Course Description
+        Course Price
         <Button variant="ghost" onClick={()=>setIsEditing(!isEditing)}>
           {isEditing ? (
             <>
@@ -65,7 +64,7 @@ const DescriptionForm = ({
           ):(
             <>
               <Pencil className="w-4 h-4 mr-2"/>
-              Edit Description
+              Edit Price
             </>
           )}
         </Button>
@@ -73,9 +72,11 @@ const DescriptionForm = ({
       {!isEditing && (
         <p className={cn(
           "text-sm mt-2",
-          !initialData.description && "text-slate-500 italic"
+          !initialData.price && "text-slate-500 italic"
         )}>
-          {initialData.description || "No Description" }
+          {
+            initialData.price ? formatPrice(initialData.price) : "No Price"
+          }
         </p>
       )}{isEditing && (
       <Form {...form}>
@@ -85,13 +86,15 @@ const DescriptionForm = ({
         >
           <FormField
             control={form.control}
-            name="description"
+            name="price"
             render={({field})=>(
               <FormItem>
                 <FormControl>
-                  <Textarea
+                  <Input
+                    type="number"
+                    step="0.01"
                     disabled={isSubmitting}
-                    placeholder="e.g. 'This course is about...'"
+                    placeholder="Set a price for your course"
                     {...field}
                   />
                 </FormControl>
@@ -111,4 +114,4 @@ const DescriptionForm = ({
   )
 }
 
-export default DescriptionForm
+export default PriceForm
