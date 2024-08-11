@@ -1,7 +1,7 @@
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { CircleDollarSign, LayoutDashboard, ListCheck } from "lucide-react";
+import { CircleDollarSign, File, LayoutDashboard, ListCheck } from "lucide-react";
 import { redirect } from "next/navigation";
 import TitleForm from "./_components/TitleForm";
 import DescriptionForm from "./_components/DescriptionForm";
@@ -10,6 +10,8 @@ import { Combobox } from "@/components/ui/combobox";
 import CategoryForm from "./_components/CategoryForm";
 import { getEnabledCategories } from "trace_events";
 import PriceForm from "./_components/PriceForm";
+import Attachment from "./_components/AttachmentForm";
+import ChaptersForm from "./_components/ChaptersForm";
 
 const CourseIdPage = async ({
   params
@@ -24,7 +26,20 @@ const CourseIdPage = async ({
 
   const course = await db.course.findUnique({
     where:{
-      id: params.courseId
+      id: params.courseId,
+      userId
+    },
+    include:{
+      chapters:{
+        orderBy:{
+          position:"asc"
+        }
+      },
+      attachments:{
+        orderBy:{
+          createdAt:"desc"
+        }
+      }
     }
   })
 
@@ -41,7 +56,8 @@ const CourseIdPage = async ({
     course.description,
     course.categoryId,
     course.imageUrl,
-    course.price
+    course.price,
+    course.chapters.some(chapter => chapter.isPublished)
   ]
 
   const totalFields = requiredFields.length;
@@ -99,7 +115,10 @@ const CourseIdPage = async ({
               </h2>
             </div>
             <div>
-              TODO:Chapters
+              <ChaptersForm
+                initialData={course}
+                courseId={course.id}  
+              />
             </div>
           </div>
           <div>
@@ -110,6 +129,18 @@ const CourseIdPage = async ({
               </h2>
             </div>
             <PriceForm
+              initialData={course}
+              courseId={course.id}
+            />
+          </div>
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={File}/>
+              <h2 className="text-xl font-semibold">
+                Resources & Attachments
+              </h2>
+            </div>
+            <Attachment
               initialData={course}
               courseId={course.id}
             />

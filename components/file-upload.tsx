@@ -18,7 +18,7 @@ const FileUpload = ({
       endpoint={endpoint}
       onClientUploadComplete={(res)=>{
         onChange(res?.[0].url);
-        toast.success("Image uploaded successfully")
+        toast.success("File uploaded successfully")
       }}
       onUploadError={(error:Error)=>{
         toast.error(`${error?.message}`)
