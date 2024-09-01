@@ -8,12 +8,13 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Chapter, Course } from '@prisma/client'
 import axios from 'axios'
-import { Pencil, PlusCircle } from 'lucide-react'
+import { Loader2, Pencil, PlusCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import * as z from 'zod'
+import ChaptersList from './ChaptersList'
 
 interface ChaptersFormProps {
   initialData:Course & {chapters: Chapter[]}
@@ -52,6 +53,7 @@ const ChaptersForm = ({
     try {
       await axios.post(`/api/courses/${courseId}/chapters`, values)
       toast.success("Chapter Created")
+      setIsCreating(!isCreating)
       toggleCreating()
       router.refresh()
     } catch (error) {
@@ -101,7 +103,9 @@ const ChaptersForm = ({
             )}
           />
           <Button disabled={!isValid || isSubmitting} type="submit">
-            Create
+            {
+              isSubmitting ? <>Creating <Loader2 className="animate-spin h-4 w-4 ml-1"/></>: "Create"
+            }
           </Button>
         </form>
       </Form>
@@ -112,7 +116,11 @@ const ChaptersForm = ({
           !initialData.chapters.length && "text-slate-500 italic"
         )}>
           {!initialData.chapters.length && "No chapters"}
-          {/* TODO:List of chapters */}
+          <ChaptersList
+            onEdit={()=>{}}
+            onReorder={()=>{}}
+            items={initialData.chapters || []}
+          />
         </div>
       )}
       {

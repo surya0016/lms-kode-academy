@@ -101,23 +101,27 @@ const Attachment = ({
                   key = {attachment.id}
                   className="flex items-center justify-between p-3 w-full border-sky-200 border text-sky-700 rounded-md bg-sky-100"
                   >
-                    <File className="h-4 w-4 mr-2 flex-shrink-0"/> 
-                    <p className="text-sm line-clamp-1">
-                      {attachment.name}
-                    </p>
-                    {deletingId === attachment.id && (
-                      <div>
-                        <Loader2 className="h-4 w-4 animate-spin"/>
-                      </div>
-                    )}
-                    {deletingId !== attachment.id && (
-                      <button
-                        onClick={()=>onDelete(attachment.id)}
-                        className='ml-auto hover:opacity-75 transition'
-                      >
-                        <Trash2Icon className="h-4 w-4 "/>
-                      </button>
-                    )}
+                    <div className='flex flex-row items-center'>
+                      <File className="h-4 w-4 mr-1 flex-shrink-0"/> 
+                      <p className="text-sm line-clamp-1">
+                        {attachment.name}
+                      </p>
+                    </div>
+                    <div  className='flex items-center'>
+                      {deletingId === attachment.id && (
+                        <div>
+                          <Loader2 className="h-4 w-4 animate-spin"/>
+                        </div>
+                      )}
+                      {deletingId !== attachment.id && (
+                        <button
+                          onClick={()=>onDelete(attachment.id)}
+                          className='ml-auto hover:opacity-75 transition'
+                        >
+                          <Trash2Icon className="h-4 w-4 "/>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

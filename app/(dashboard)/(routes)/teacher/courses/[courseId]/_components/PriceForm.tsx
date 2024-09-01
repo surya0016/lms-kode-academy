@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Course } from '@prisma/client'
 import axios from 'axios'
-import { Pencil } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -104,7 +104,9 @@ const PriceForm = ({
           />
           <div className="flex items-center gap-x-2">
             <Button disabled={!isValid || isSubmitting} type="submit">
-              Save
+            {
+              isSubmitting ? <>Saving <Loader2 className="animate-spin h-4 w-4 ml-1"/></>: "Save"
+            }
             </Button>
           </div>
         </form>
