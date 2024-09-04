@@ -13,7 +13,7 @@ import { Grip, Pencil  } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 interface ChaptersListProps {
-  onReorder: ()=>void
+  onReorder: (updateData: { id: string; position: number; }[]) => void
   onEdit: (id:string)=>void
   items: Chapter[]
 }
@@ -34,12 +34,34 @@ const ChaptersList = ({
     setChapters(items)
   },[])
 
+  const onDragEnd = (result:DropResult) => {
+    if (!result.destination) return;
+    
+    const items = Array.from(chapters)
+    const [reorderedItems] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItems);
+
+    const startIndex = Math.min(result.source.index, result.destination.index)
+    const endIndex = Math.max(result.source.index, result.destination.index)
+
+    const updatedChapters = items.slice(startIndex, endIndex + 1);
+
+    setChapters(items);
+
+    const bulkUpdateData = updatedChapters.map((chapter)=>({
+      id: chapter.id,
+      position: items.findIndex((item)=>item.id === chapter.id)
+    }))
+
+    onReorder(bulkUpdateData)
+  }
+
   if(!isMounted){
     return null;
   }
 
   return (
-    <DragDropContext onDragEnd={()=>{}}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="chapters">
         {(provided)=>(
           <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -79,7 +101,7 @@ const ChaptersList = ({
                         )}
                         <Badge className={
                           cn(
-                            "bg-slate-500 text-slate-300",
+                            "bg-slate-500 text-slate-300 hover:bg-slate-500 hover:cursor-default",
                             chapter.isPublished && "bg-sky-700"
                           )
                         }>
@@ -93,8 +115,8 @@ const ChaptersList = ({
                     </div>
                   )}
                 </Draggable>
-              ))
-            }
+              ))}
+              {provided.placeholder}
           </div>
         )}
       </Droppable>

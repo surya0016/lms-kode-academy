@@ -58,12 +58,39 @@ const ChaptersForm = ({
       router.refresh()
     } catch (error) {
       toast.error("Something went wrong")
+    } finally {
+      setIsUpdating(false)
     }
     console.log(values)
   }
+
+  const onEdit = (id:string) => {
+    router.push(`/teacher/courses/${courseId}/chapters/${id}`)
+  }
+
+  const onReorder = async(updateData:{id:string, position:number}[]) => {
+    try {
+      setIsUpdating(true)
+      await axios.put(`/api/courses/${courseId}/chapters/reorder`,{
+        list: updateData
+      })
+      toast.success("Chapters reordered",{position:"top-center"})
+      router.refresh()
+      
+    } catch (error) {
+      toast.error("Something went wrong",{position:"top-center"})
+    } finally {
+      setIsUpdating(false)
+    }
+  }
   
   return (
-    <div className="mt-6 border dark:text-white dark:bg-slate-900 bg-slate-100 rounded-md p-4">
+    <div className="relative mt-6 border dark:text-white dark:bg-slate-900 bg-slate-100 rounded-md p-4">
+      {isUpdating && (
+        <div className='absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center'>
+          <Loader2 className='animate-spin h-6 w-6 text-sky-700 '/>
+        </div>
+      )}
       <div className="font-semibold flex items-center justify-between">
         Course Chapters
         <Button variant="ghost" onClick={()=>setIsCreating(!isCreating)}>
@@ -117,8 +144,8 @@ const ChaptersForm = ({
         )}>
           {!initialData.chapters.length && "No chapters"}
           <ChaptersList
-            onEdit={()=>{}}
-            onReorder={()=>{}}
+            onEdit={onEdit}
+            onReorder={onReorder}
             items={initialData.chapters || []}
           />
         </div>
