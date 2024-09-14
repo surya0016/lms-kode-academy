@@ -57,6 +57,7 @@ const ChapterTitleForm = ({
     }
     console.log(values)
   }
+
   return (
     <div className="mt-6 border dark:text-white dark:bg-slate-900 bg-slate-100 rounded-md p-4">
       <div className="font-semibold flex items-center justify-between">
