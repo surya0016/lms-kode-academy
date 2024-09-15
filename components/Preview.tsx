@@ -16,6 +16,7 @@ export const Preview = ({
   return (
     <div className="bg-white">
       <ReactQuill
+        className="dark:bg-slate-900"
         theme="bubble"
         value={value}
         readOnly
