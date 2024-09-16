@@ -5,34 +5,23 @@ import toast from "react-hot-toast"
 import { useState } from "react"
 import { Button } from "@/components/ui/button";
 import { Loader2, Trash } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import ConfirmModal from "@/components/confirm-modal";
 import { useRouter } from "next/navigation";
+import { useConfettiStore } from "@/hooks/use-confetti.store";
 
-interface ChapterActionsProps {
+interface ActionsProps {
   disabled: boolean;
   courseId: string;
-  chapterId: string;
   isPublished: boolean;
 }
 
-const ChapterActions = ({
+const Actions = ({
   disabled,
   courseId,
-  chapterId,
   isPublished
-}:ChapterActionsProps) => {
+}:ActionsProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const confetti = useConfettiStore()
   const router = useRouter()
 
   const onClick = async () => {
@@ -40,12 +29,13 @@ const ChapterActions = ({
       setIsLoading(true)
 
       if(isPublished){
-        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/unpublish`)
-        toast.success("Chapter unpublished")
+        await axios.patch(`/api/courses/${courseId}/unpublish`)
+        toast.success("Course unpublished")
         router.refresh()
       }else{
-        await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}/publish`)
-        toast.success("Chapter published")
+        await axios.patch(`/api/courses/${courseId}/publish`)
+        toast.success("Course published")
+        confetti.onOpen();
         router.refresh()
       }
     } catch (error) {
@@ -58,10 +48,10 @@ const ChapterActions = ({
   const onDelete = async() => {
     try {
       setIsLoading(true)
-      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`)
-      toast.success("Chapter Deleted")
+      await axios.delete(`/api/courses/${courseId}`)
+      toast.success("Course Deleted")
       router.refresh()
-      router.push(`/teacher/courses/${courseId}`)
+      router.push(`/teacher/courses`)
     } catch (error) {
       toast.error("Something went wrong")
       setIsLoading(false)
@@ -90,4 +80,4 @@ const ChapterActions = ({
   )
 }
 
-export default ChapterActions
+export default Actions

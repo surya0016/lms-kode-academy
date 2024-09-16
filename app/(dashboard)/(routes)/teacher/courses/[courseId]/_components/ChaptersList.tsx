@@ -9,8 +9,11 @@ import {
   DropResult
 } from "@hello-pangea/dnd"
 import { cn } from "@/lib/utils"
-import { Grip, Pencil  } from "lucide-react"
+import { Grip, Loader, Pencil, Trash  } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import axios from "axios"
+import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
 interface ChaptersListProps {
   onReorder: (updateData: { id: string; position: number; }[]) => void
@@ -21,10 +24,12 @@ interface ChaptersListProps {
 const ChaptersList = ({
   onEdit,
   onReorder,
-  items
+  items,
 }:ChaptersListProps) => {
   const [isMounted, setIsMounted] = useState(false)
   const [chapters, setChapters] = useState(items)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   useEffect(()=>{
     setIsMounted(true)
@@ -33,6 +38,18 @@ const ChaptersList = ({
   useEffect(()=>{
     setChapters(items)
   },[])
+
+  const onDelete = async(courseId:string, chapterId:string) => {
+    try {
+      setIsLoading(true)
+      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`)
+      toast.success("Chapter Deleted")
+      router.refresh()
+    } catch (error) {
+      toast.error("Something went wrong")
+      setIsLoading(false)
+    }
+  }
 
   const onDragEnd = (result:DropResult) => {
     if (!result.destination) return;
@@ -109,8 +126,13 @@ const ChaptersList = ({
                         </Badge>
                         <Pencil 
                           onClick={()=>onEdit(chapter.id)}
-                          className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                          className="w-4 h-4 mx-2 cursor-pointer hover:opacity-75 transition"
                         />
+                        
+                        {/* {isLoading ? <Loader className="animate-spin w-4 h-4 mr-1"/>:<Trash
+                          onClick={()=>onDelete(chapter.courseId, chapter.id)}
+                          className="w-4 h-4 mr-1 cursor-pointer hover:opacity-75 transition"
+                        />} */}
                       </div>
                     </div>
                   )}

@@ -3,12 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type Chapter, Course } from '@prisma/client'
 import axios from 'axios'
-import { Loader2, Pencil, PlusCircle } from 'lucide-react'
+import { Loader2, PlusCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -56,6 +55,7 @@ const ChaptersForm = ({
       setIsCreating(!isCreating)
       toggleCreating()
       router.refresh()
+      location.reload()
     } catch (error) {
       toast.error("Something went wrong")
     } finally {
@@ -119,7 +119,6 @@ const ChaptersForm = ({
               <FormItem>
                 <FormControl>
                   <Input
-                    
                     disabled={isSubmitting}
                     placeholder="e.g. 'Introduction to the course'"
                     {...field}
