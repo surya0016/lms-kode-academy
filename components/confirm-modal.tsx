@@ -36,8 +36,8 @@ const ConfirmModal = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
+            <AlertDialogCancel className="border-red-500">Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-500 hover:bg-red-800" onClick={onConfirm}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
