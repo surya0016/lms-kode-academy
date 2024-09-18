@@ -8,14 +8,12 @@ import qs from "query-string"
 
 interface CategoryItemProps {
   icon?: IconType,
-  key: Key,
   value?: string
   label?: string
 }
 
 const CategoryItem = ({
   icon: Icon,
-  key,
   value,
   label
 }: CategoryItemProps) => {
