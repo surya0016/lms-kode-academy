@@ -33,7 +33,7 @@ export const getChapter = async({
     });
 
     const chapter = await db.chapter.findUnique({
-      where:{
+      where:{                                                                   
         id: chapterId,
         isPublished: true
       }
